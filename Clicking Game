@@ -1,0 +1,14 @@
+# This is a basic script just to send the keys on a clicking game 
+# Website :- https://particle-clicker.web.cern.ch/
+
+
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+driver = webdriver.Chrome(ChromeDriverManager().install())
+
+
+driver.get("https://particle-clicker.web.cern.ch")
+driver.implicitly_wait(20)
+clicking=driver.find_element_by_id("detector-events")
+while (True):
+    clicking.click()
