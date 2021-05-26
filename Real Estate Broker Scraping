@@ -1,0 +1,55 @@
+# This code scrape the profile of real estate agents register on a website.
+# TO run this script you have to install Python, Selenium, BeautifulSoup and CSV.
+
+# Website :- https://licensee.io/ca-real-estate/00006200-james-leon-walling/
+
+from bs4 import BeautifulSoup
+from urllib.request import Request, urlopen
+import csv
+
+req = Request("https://licensee.io/real-estate-ca/beaumont/brokers")  ## Requesting Broker URL consisting of table
+html_page = urlopen(req)
+soup = BeautifulSoup(html_page, "html.parser")
+all_link=[] # Storage of all links 
+for j in soup.find_all('a'):
+    actual_link=j.get('href')
+    if 'ca-real-estate' in actual_link:
+        all_link.append(actual_link)
+
+# In this format        
+# NameJames Leon Walling
+# CredentialsReal Estate Broker
+# Complete Address1725 Scottsdale Rd,Beaumont, California 92223
+# County Name & CodeRiverside County (County Code: 33)
+
+
+# License Number00006200
+# License TypeReal Estate Broker
+# License Status
+# Licensed NBA (No 'current main office' Business Address)        
+# License Effective Date02 August, 2017
+# License Expiry Date01 August, 2021
+
+
+file1 = open(r"content1.txt","w")  ## Location of TXT file in which all the content is being stored
+
+for i,linked in enumerate(all_link):
+    temp=[]
+    req = Request(linked)
+    html_page = urlopen(req)
+    soup = BeautifulSoup(html_page, "html.parser")
+    file1.write(str(i+1)) # Indexing a chunck of content
+    file1.write(" ")
+    file1.write(" ")
+    for j in soup.find_all('table'):
+        temp=j.get_text()
+        file1.writelines(temp)  ## Writing up in the file
+
+        
+## Since the Content is being not so uniform I have cleaned it using Notepad and than being converted to CSV.
+## There is proper spacing between an element and all element have been marked with 1,2..., so that it is easy to locate element.
+
+    
+        
+        
+    
