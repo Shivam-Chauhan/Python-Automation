@@ -1,0 +1,113 @@
+# This code scrape the recent accepted solution of an individual on Codeforces and gives two option for storing it on GitHub or storing it as a folder
+# on local machine.
+
+# It requires Selenium, OS, Time and SYS as module for implementation.
+# You can use pip install Selenium for installing the Selenium Module and rest of the module are pre-installed in your machine if you have Python.
+# You have to enter password and various credentials for running this script as this finds the submission of an individual by searching the profile of the same.
+
+# https://codeforces.com/
+# https://pypi.org/project/selenium/
+
+
+
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+import os
+import sys
+
+
+                                                          #Password Confirmation for Codeforces
+def password_confirmation(driver):
+    driver.implicitly_wait(20)
+    handle=driver.find_element_by_id("handleOrEmail")
+    handle_name=input("Input handle name :- ")
+    handle.send_keys(handle_name) 
+    
+    password_name=input("Input password :-")
+    password=driver.find_element_by_id("password")
+    password.send_keys(password_name)
+    login_clicking=driver.find_element_by_xpath("//*[@id='enterForm']/table/tbody/tr[4]/td/div[1]/input")
+    login_clicking.click()
+
+                                                           #Adding Submissions into a folder
+def adding_in_folder(txt,question_name):
+    
+    with open(os.path.join(directory_path+'/'+question_name+'.txt'),'w') as fp:
+        fp.write(txt)
+
+
+                                                            # Finding the accepted solution 
+def finding_accepted(driver):
+    driver.implicitly_wait(20)
+    data_submission_table=driver.find_element_by_class_name("status-frame-datatable")
+    data_set=list(map(str, data_submission_table.text.split("KB")))
+    ct=1
+    for data in data_set:
+        if ct==1:
+            ct+=1
+            continue
+        if "Accepted" in data:
+            duplicate_data=list(map(str,data.split(" ")))
+            ide=duplicate_data[0]  
+            question=duplicate_data[4] 
+            driver.get("https://codeforces.com/problemset/submission/"+question[0:len(question)-1]+"/"+ide[1:])
+            copy=driver.find_element_by_id("program-source-text")
+            adding_in_folder(copy.text,question)
+            driver.back()
+
+
+        ct+=1
+                                                            # Entering the File on Github Repo
+def GitHub_repository(driver):
+    driver.implicitly_wait(10)
+    new_clicking=driver.find_element_by_xpath("//*[@id='repos-container']/h2/a")
+    new_clicking.click()
+    repository_name=driver.find_element_by_id("repository_name")
+    print("Now create your own custom repository and drop the folder of your submission there.")
+    
+    
+    
+                                                             # Validating GitHub Repository
+def GitHub_entering(driver):
+    driver.implicitly_wait(10)
+    gh_login=driver.find_element_by_id("login_field")
+    handle_name=input("Handle name:- ")
+    gh_login.send_keys(handle_name)
+    gh_password=driver.find_element_by_id("password")
+    password_name=input("Password :-")
+    gh_password.send_keys(password_name)
+    clicking_enter=driver.find_element_by_xpath("//*[@id='login']/div[4]/form/input[14]")
+    clicking_enter.click()
+    GitHub_repository(driver)
+
+
+
+        
+                                                              # Starting of the program
+Path=input("Specified the path for Selenium Webdriver:- ")
+driver=webdriver.Chrome(Path)
+directory_path=input("Input directory path like C:/Users/Name/Desktop/Storing_Folder:- ")
+driver.implicitly_wait(10)
+print("Going to Codeforces!! ")
+driver.get("https://codeforces.com/problemset/status?my=on")
+clicking_enter=driver.find_element_by_xpath("//*[@id='header']/div[2]/div[2]/a[1]")
+clicking_enter.click()
+password_confirmation(driver)
+finding_accepted(driver)
+print("Want a Github repository?")
+yn=input("Enter YES or NO:- ")
+
+if yn=="YES":
+    driver=webdriver.Chrome(Path)
+    driver.get("https://github.com/login")
+    driver.implicitly_wait(10)
+    GitHub_entering(driver)
+else:
+    print("Done")
+
+
