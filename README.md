@@ -1,2 +1,2 @@
 # Python-Automation
-This depository is consist Scraping and Automation.
+This depository consists Scraping and Automation.
